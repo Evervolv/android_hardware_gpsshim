@@ -47,7 +47,7 @@ extern const OldGpsInterface* gps_get_hardware_interface();
 
 static void location_callback_wrapper(OldGpsLocation *location) {
     static GpsLocation newLocation;
-    LOGV("I have a location");
+    ALOGV("I have a location");
     newLocation.size = sizeof(GpsLocation);
     newLocation.flags = location->flags;
     newLocation.latitude = location->latitude;
@@ -63,7 +63,7 @@ static void location_callback_wrapper(OldGpsLocation *location) {
 static void status_callback_wrapper(OldGpsStatus *status) {
     static GpsStatus newStatus;
     newStatus.size = sizeof(GpsStatus);
-    LOGV("Status value is %u",status->status);
+    ALOGV("Status value is %u",status->status);
     newStatus.status = status->status;
     originalCallbacks->create_thread_cb("gpsshim-status",(void *)originalCallbacks->status_cb,(void *)&newStatus);
 }
@@ -71,7 +71,7 @@ static void status_callback_wrapper(OldGpsStatus *status) {
 static void svstatus_callback_wrapper(OldGpsSvStatus *sv_info) {
     static GpsSvStatus newSvStatus;
     int i=0;
-    LOGV("I have a svstatus");
+    ALOGV("I have a svstatus");
     newSvStatus.size = sizeof(GpsSvStatus);
     newSvStatus.num_svs = sv_info->num_svs;
     for (i=0; i<newSvStatus.num_svs; i++) {
@@ -90,7 +90,7 @@ static void svstatus_callback_wrapper(OldGpsSvStatus *sv_info) {
 GpsUtcTime nmeasave_timestamp; const char* nmeasave_nmea; int nmeasave_length;
 
 static void nmea_callback(void *unused) {
-    LOGV("Invoking nmea callback");
+    ALOGV("Invoking nmea callback");
     originalCallbacks->nmea_cb(nmeasave_timestamp, nmeasave_nmea, nmeasave_length);
 }
 
@@ -124,13 +124,13 @@ static const AGpsRilCallbacks* newAGpsRilCallbacks = NULL;
 
 static void agpsril_setid_cb(uint32_t flags)
 {
-    LOGV("AGPSRIL setid callback");
+    ALOGV("AGPSRIL setid callback");
     newAGpsRilCallbacks->create_thread_cb("gpsshim-agpsril-setid",(void *)newAGpsRilCallbacks->request_setid,&flags);
 }
 
 static void agpsril_refloc_cb(uint32_t flags)
 {
-    LOGV("AGPSRIL refloc callback");
+    ALOGV("AGPSRIL refloc callback");
     newAGpsRilCallbacks->create_thread_cb("gpsshim-agpsril-refloc",(void *)newAGpsRilCallbacks->request_refloc,&flags);
 }
 
@@ -139,7 +139,7 @@ static void agpsril_init_wrapper(AGpsRilCallbacks * callbacks)
     newAGpsRilCallbacks = callbacks;
     oldAGpsRilCallbacks.request_setid = agpsril_setid_cb;
     oldAGpsRilCallbacks.request_refloc = agpsril_refloc_cb;
-    LOGV("AGPSRIL init");
+    ALOGV("AGPSRIL init");
 
     oldAGPSRIL->init(&oldAGpsRilCallbacks);
 }
@@ -205,7 +205,7 @@ static const void* wrapper_get_extension(const char* name)
 }
 
 static int  init_wrapper(GpsCallbacks* callbacks) {
-    LOGV("init_wrapper was called");
+    ALOGV("init_wrapper was called");
     static OldGpsCallbacks oldCallbacks;
     originalCallbacks = callbacks;
     oldCallbacks.location_cb = location_callback_wrapper;
@@ -238,7 +238,7 @@ static int start_wrapper() {
 /* HAL Methods */
 const GpsInterface* gps__get_gps_interface(struct gps_device_t* dev)
 {
-	LOGV("get_interface was called");
+	ALOGV("get_interface was called");
     originalGpsInterface = gps_get_hardware_interface();
 
     newGpsInterface.size = sizeof(GpsInterface);
@@ -275,7 +275,7 @@ static struct hw_module_methods_t gps_module_methods = {
     .open = open_gps
 };
 
-const struct hw_module_t HAL_MODULE_INFO_SYM = {
+struct hw_module_t HAL_MODULE_INFO_SYM = {
     .tag = HARDWARE_MODULE_TAG,
     .version_major = 1,
     .version_minor = 0,

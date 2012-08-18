@@ -1,5 +1,8 @@
 ifeq ($(BOARD_USES_GPSSHIM),true)
 
+$(shell mkdir -p $(OUT)/obj/SHARED_LIBRARIES/libgps_intermediates/)
+$(shell touch $(OUT)/obj/SHARED_LIBRARIES/libgps_intermediates/export_includes)
+
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
